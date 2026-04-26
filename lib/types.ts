@@ -12,8 +12,45 @@ export type Product = {
   downloadLabel: string;
   featured?: boolean;
   available?: boolean;
+  sortOrder?: number | null;
 };
 
 export type CartItem = Product & {
   quantity: number;
+};
+
+export type CollectionCardContent = {
+  tag: string;
+  title: string;
+  description: string;
+};
+
+export type SiteContent = {
+  hero: {
+    eyebrow: string;
+    title: string;
+    emphasizedTitle: string;
+    description: string;
+    primaryCta: string;
+    secondaryCta: string;
+  };
+  about: {
+    eyebrow: string;
+    title: string;
+    body: string;
+  };
+  collections: {
+    eyebrow: string;
+    title: string;
+    items: CollectionCardContent[];
+  };
+  shop: {
+    eyebrow: string;
+    title: string;
+    description: string;
+  };
+  quote: {
+    text: string;
+    cite: string;
+  };
 };

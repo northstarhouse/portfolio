@@ -6,6 +6,7 @@ A Next.js storefront for a photographer portfolio with:
 - A gallery landing page
 - Product detail pages
 - A multi-item cart
+- A password-protected admin dashboard for landing-page and collection edits
 - A checkout API placeholder for future payment integration
 
 ## Stack
@@ -17,7 +18,7 @@ A Next.js storefront for a photographer portfolio with:
 ## Run locally
 
 1. Copy `.env.example` to `.env.local`
-2. Add your Supabase project URL and anon key
+2. Add your Supabase project URL, publishable key, service role key, admin password, and admin session secret
 3. Install dependencies with `npm.cmd install`
 4. Start the app with `npm.cmd run dev`
 
@@ -38,7 +39,18 @@ create table public.products (
   download_label text not null,
   featured boolean default false,
   available boolean default true,
+  sort_order integer default 0,
   created_at timestamptz default now()
+);
+```
+
+Create an admin-editable landing page content table:
+
+```sql
+create table public.site_content (
+  id text primary key,
+  content jsonb not null default '{}'::jsonb,
+  updated_at timestamptz default now()
 );
 ```
 
@@ -52,6 +64,34 @@ Recommended row shape:
 - `image_url`: public preview/display asset
 - `preview_url`: optional smaller crop or alt preview
 - `download_label`: text shown to the buyer
+
+## Admin dashboard
+
+The admin dashboard lives at `/admin`.
+
+Required environment variables:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `ADMIN_PASSWORD`
+- `ADMIN_SESSION_SECRET`
+- `SUPABASE_IMAGE_BUCKET`
+
+What it supports:
+
+- password-protected admin login
+- landing-page text editing
+- double-click replace for landing-page images sourced from product records
+- product editing for title, slug, category, description, price, and visibility
+- drag-and-drop collection ordering
+- upload new product images
+- delete old products
+
+Important deployment note:
+
+- The secure admin dashboard requires a real Next.js server deployment.
+- GitHub Pages is no longer a valid deployment target for this project because admin auth and upload routes need server-side execution.
 
 ## Payment and delivery plan
 

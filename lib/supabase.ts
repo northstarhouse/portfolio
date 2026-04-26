@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import { defaultSiteContent } from "@/lib/site-content";
 import { fallbackProducts } from "@/lib/fallback-products";
-import { Product } from "@/lib/types";
+import { Product, SiteContent } from "@/lib/types";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -26,6 +27,7 @@ type SupabaseProductRow = {
   download_label: string;
   featured: boolean | null;
   available: boolean | null;
+  sort_order: number | null;
 };
 
 function mapProduct(row: SupabaseProductRow): Product {
@@ -40,7 +42,8 @@ function mapProduct(row: SupabaseProductRow): Product {
     previewUrl: row.preview_url,
     downloadLabel: row.download_label,
     featured: row.featured ?? false,
-    available: row.available ?? true
+    available: row.available ?? true,
+    sortOrder: row.sort_order
   };
 }
 
@@ -52,9 +55,10 @@ export async function getProducts() {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, slug, title, category, description, price, image_url, preview_url, download_label, featured, available"
+      "id, slug, title, category, description, price, image_url, preview_url, download_label, featured, available, sort_order"
     )
     .eq("available", true)
+    .order("sort_order", { ascending: true, nullsFirst: false })
     .order("featured", { ascending: false })
     .order("title", { ascending: true });
 
@@ -68,6 +72,24 @@ export async function getProducts() {
 export async function getProductBySlug(slug: string) {
   const products = await getProducts();
   return products.find((product) => product.slug === slug) ?? null;
+}
+
+export async function getPublicSiteContent() {
+  if (!supabase) {
+    return defaultSiteContent;
+  }
+
+  const { data, error } = await supabase
+    .from("site_content")
+    .select("content")
+    .eq("id", "landing")
+    .maybeSingle();
+
+  if (error || !data?.content) {
+    return defaultSiteContent;
+  }
+
+  return data.content as SiteContent;
 }
 
 export function isSupabaseConfigured() {

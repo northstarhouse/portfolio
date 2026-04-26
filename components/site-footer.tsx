@@ -33,7 +33,7 @@ export function SiteFooter() {
             <h4>Connect</h4>
             <Link href="/#about">About</Link>
             <Link href="mailto:hello@haleywrightco.com">Contact</Link>
-            <Link href="/#home">Instagram</Link>
+            <Link href="/admin">Admin</Link>
             <Link href="/#home">Newsletter</Link>
           </div>
         </div>
