@@ -239,7 +239,7 @@ select {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  align-items: end;
+  align-items: flex-end;
   margin-bottom: 1.5rem;
 }
 

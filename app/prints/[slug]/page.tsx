@@ -2,7 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { formatCurrency } from "@/lib/format";
-import { getProductBySlug } from "@/lib/supabase";
+import { getProductBySlug, getProducts } from "@/lib/supabase";
+
+export async function generateStaticParams() {
+  const products = await getProducts();
+  return products.map((product) => ({ slug: product.slug }));
+}
 
 export default async function ProductPage({
   params
