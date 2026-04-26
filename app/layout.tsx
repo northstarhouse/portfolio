@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/components/cart-context";
+import { SiteAdminAccess } from "@/components/site-admin-access";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body>
         <CartProvider>
           <SiteHeader />
+          <SiteAdminAccess />
           {children}
           <SiteFooter />
         </CartProvider>
