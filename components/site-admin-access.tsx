@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { tryClientAdminLogin } from "@/lib/client-admin-auth";
 
 export function SiteAdminAccess() {
   const pathname = usePathname();
@@ -17,24 +18,16 @@ export function SiteAdminAccess() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setPending(true);
     setError("");
+    setPending(true);
 
-    const response = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ password })
-    });
-
-    setPending(false);
-
-    if (!response.ok) {
+    if (!tryClientAdminLogin(password)) {
+      setPending(false);
       setError("Incorrect password.");
       return;
     }
 
+    setPending(false);
     setOpen(false);
     setPassword("");
     router.push("/admin/dashboard");

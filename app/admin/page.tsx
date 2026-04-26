@@ -1,12 +1,6 @@
-import { redirect } from "next/navigation";
 import { AdminLoginForm } from "@/components/admin-login-form";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 export default async function AdminLoginPage() {
-  if (await isAdminAuthenticated()) {
-    redirect("/admin/dashboard");
-  }
-
   return (
     <main className="admin-login-shell">
       <section className="admin-login-card">

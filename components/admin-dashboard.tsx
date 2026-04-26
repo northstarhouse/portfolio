@@ -1,12 +1,20 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import {
+  createBrowserProduct,
+  deleteBrowserProduct,
+  reorderBrowserProducts,
+  saveBrowserProduct,
+  saveBrowserSiteContent,
+  uploadBrowserImage
+} from "@/lib/supabase-browser";
 import { SiteContent, Product, ProductCategory } from "@/lib/types";
 
 type AdminDashboardProps = {
   initialContent: SiteContent;
   initialProducts: Product[];
-  hasWriteAccess: boolean;
+  onLogout: () => void;
 };
 
 type EditableTextProps = {
@@ -79,7 +87,7 @@ function EditableText({
 export function AdminDashboard({
   initialContent,
   initialProducts,
-  hasWriteAccess
+  onLogout
 }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<"landing" | "collections">("landing");
   const [content, setContent] = useState(initialContent);
@@ -106,56 +114,27 @@ export function AdminDashboard({
     setPending(true);
     setStatus("");
 
-    const response = await fetch("/api/admin/content", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ content: nextContent })
-    });
-
-    setPending(false);
-
-    if (!response.ok) {
+    try {
+      await saveBrowserSiteContent(nextContent);
+      setPending(false);
+      setStatus("Landing page saved.");
+    } catch {
+      setPending(false);
       setStatus("Landing page save failed.");
-      return;
     }
-
-    setStatus("Landing page saved.");
   }
 
   async function saveProduct(product: Product) {
-    const response = await fetch("/api/admin/products", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ product })
-    });
-
-    if (!response.ok) {
+    try {
+      await saveBrowserProduct(product);
+      setStatus(`Saved ${product.title}.`);
+    } catch {
       setStatus(`Could not save ${product.title}.`);
-      return;
     }
-
-    setStatus(`Saved ${product.title}.`);
   }
 
   async function uploadImage(file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await fetch("/api/admin/upload", {
-      method: "POST",
-      body: formData
-    });
-
-    if (!response.ok) {
-      throw new Error("Upload failed");
-    }
-
-    const payload = (await response.json()) as { publicUrl: string };
-    return payload.publicUrl;
+    return uploadBrowserImage(file);
   }
 
   async function replaceProductImage(productId: string, file: File) {
@@ -184,41 +163,22 @@ export function AdminDashboard({
 
   async function persistOrder(nextProducts: Product[]) {
     setProducts(nextProducts);
-
-    const response = await fetch("/api/admin/products", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        ids: nextProducts.map((product) => product.id)
-      })
-    });
-
-    if (!response.ok) {
+    try {
+      await reorderBrowserProducts(nextProducts);
+      setStatus("Collection order updated.");
+    } catch {
       setStatus("Could not save order.");
-      return;
     }
-
-    setStatus("Collection order updated.");
   }
 
   async function deleteProduct(id: string) {
-    const response = await fetch("/api/admin/products", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ id })
-    });
-
-    if (!response.ok) {
+    try {
+      await deleteBrowserProduct(id);
+      setProducts((current) => current.filter((product) => product.id !== id));
+      setStatus("Photo removed.");
+    } catch {
       setStatus("Delete failed.");
-      return;
     }
-
-    setProducts((current) => current.filter((product) => product.id !== id));
-    setStatus("Photo removed.");
   }
 
   async function createProduct(event: React.FormEvent<HTMLFormElement>) {
@@ -231,34 +191,37 @@ export function AdminDashboard({
 
     try {
       const imageUrl = await uploadImage(newProductFile);
-      const response = await fetch("/api/admin/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          product: {
-            title: newProduct.title,
-            slug: newProduct.slug,
-            category: newProduct.category,
-            description: newProduct.description,
-            price: Number(newProduct.price),
-            imageUrl,
-            previewUrl: imageUrl,
-            downloadLabel: newProduct.downloadLabel,
-            featured: newProduct.featured,
-            available: newProduct.available
-          }
-        })
+      await createBrowserProduct({
+        title: newProduct.title,
+        slug: newProduct.slug,
+        category: newProduct.category,
+        description: newProduct.description,
+        price: Number(newProduct.price),
+        imageUrl,
+        previewUrl: imageUrl,
+        downloadLabel: newProduct.downloadLabel,
+        featured: newProduct.featured,
+        available: newProduct.available,
+        sortOrder: products.length + 1
       });
-
-      if (!response.ok) {
-        setStatus("Could not create product.");
-        return;
-      }
-
-      const payload = (await response.json()) as { products: Product[] };
-      setProducts(payload.products);
+      const nextProducts = [
+        ...products,
+        {
+          id: crypto.randomUUID(),
+          title: newProduct.title,
+          slug: newProduct.slug,
+          category: newProduct.category,
+          description: newProduct.description,
+          price: Number(newProduct.price),
+          imageUrl,
+          previewUrl: imageUrl,
+          downloadLabel: newProduct.downloadLabel,
+          featured: newProduct.featured,
+          available: newProduct.available,
+          sortOrder: products.length + 1
+        }
+      ];
+      setProducts(nextProducts);
       setNewProductFile(null);
       setNewProduct({
         title: "",
@@ -276,13 +239,6 @@ export function AdminDashboard({
     }
   }
 
-  async function logout() {
-    await fetch("/api/admin/logout", {
-      method: "POST"
-    });
-    window.location.href = "/admin";
-  }
-
   return (
     <div className="admin-shell">
       <div className="admin-toolbar">
@@ -295,27 +251,19 @@ export function AdminDashboard({
         </div>
 
         <div className="admin-toolbar__actions">
-          <button className="button-secondary" type="button" onClick={logout}>
+          <button className="button-secondary" type="button" onClick={onLogout}>
             Log out
           </button>
           <button
             className="button"
             type="button"
-            disabled={!hasWriteAccess || pending}
+            disabled={pending}
             onClick={() => saveContent()}
           >
             {pending ? "Saving..." : "Save Landing Page"}
           </button>
         </div>
       </div>
-
-      {!hasWriteAccess ? (
-        <div className="admin-warning">
-          Add `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`, and
-          `ADMIN_SESSION_SECRET` to enable secure writes. The dashboard UI is
-          present, but changes cannot be saved yet.
-        </div>
-      ) : null}
 
       {status ? <div className="admin-status">{status}</div> : null}
 
@@ -900,7 +848,7 @@ export function AdminDashboard({
                 />
                 <span>Visible</span>
               </label>
-              <button className="button" type="submit" disabled={!hasWriteAccess}>
+              <button className="button" type="submit">
                 Add Photo
               </button>
             </form>

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { tryClientAdminLogin } from "@/lib/client-admin-auth";
 
 export function AdminLoginForm() {
   const router = useRouter();
@@ -11,18 +12,10 @@ export function AdminLoginForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setPending(true);
     setError("");
+    setPending(true);
 
-    const response = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ password })
-    });
-
-    if (!response.ok) {
+    if (!tryClientAdminLogin(password)) {
       setPending(false);
       setError("Password was not accepted.");
       return;

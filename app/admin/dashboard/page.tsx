@@ -1,22 +1,12 @@
-import { AdminDashboard } from "@/components/admin-dashboard";
-import { getAdminProducts, getSiteContent, hasAdminWriteAccess } from "@/lib/admin-data";
-import { requireAdminSession } from "@/lib/admin-auth";
+import { AdminDashboardEntry } from "@/components/admin-dashboard-entry";
+import { fallbackProducts } from "@/lib/fallback-products";
+import { defaultSiteContent } from "@/lib/site-content";
 
 export default async function AdminDashboardPage() {
-  await requireAdminSession();
-
-  const [content, products] = await Promise.all([
-    getSiteContent(),
-    getAdminProducts()
-  ]);
-
   return (
-    <main className="admin-page-shell">
-      <AdminDashboard
-        initialContent={content}
-        initialProducts={products}
-        hasWriteAccess={hasAdminWriteAccess()}
-      />
-    </main>
+    <AdminDashboardEntry
+      initialContent={defaultSiteContent}
+      initialProducts={fallbackProducts}
+    />
   );
 }
