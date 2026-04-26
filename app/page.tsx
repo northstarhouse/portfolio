@@ -1,164 +1,157 @@
 import Link from "next/link";
+import { CollectionsCarousel } from "@/components/collections-carousel";
 import { HeroSlideshow } from "@/components/hero-slideshow";
-import { GalleryCard } from "@/components/gallery-card";
 import { getProducts } from "@/lib/supabase";
 
 export default async function Home() {
   const products = await getProducts();
-  const featured = products.filter((product) => product.featured).slice(0, 3);
-  const gallery = products.slice(0, 6);
-  const slideshowImages = products.slice(0, 4).map((product) => ({
+
+  const slideshowSlides = products.slice(0, 4).map((product) => ({
     src: product.imageUrl,
     alt: product.title
   }));
 
+  const collections = [
+    {
+      tag: "Landscapes",
+      title: "Golden Hour & Open Meadows",
+      description:
+        "Sun-drenched fields, rolling oak-dotted hills, and the long light of late afternoon in the Sierra Nevada foothills.",
+      image: slideshowSlides[0]?.src ?? products[0]?.imageUrl ?? "",
+      href: "#shop"
+    },
+    {
+      tag: "Architecture",
+      title: "Historic Spaces & Buildings",
+      description:
+        "Nevada County's storied architecture — from Victorian homes to mining-era halls — captured in quiet, reverent detail.",
+      image: slideshowSlides[1]?.src ?? products[1]?.imageUrl ?? "",
+      href: "#shop"
+    },
+    {
+      tag: "Nature & Light",
+      title: "Seasonal Light & Forest",
+      description:
+        "Morning fog through pine canopy, autumn color along trail corridors, and the soft quiet of a Nevada County winter.",
+      image: slideshowSlides[2]?.src ?? products[2]?.imageUrl ?? "",
+      href: "#shop"
+    },
+    {
+      tag: "Water & Wilderness",
+      title: "Creeks, Rivers & Trails",
+      description:
+        "The quiet creeks and forested trails that thread through Nevada County — still, wild, and full of light.",
+      image: slideshowSlides[3]?.src ?? products[3]?.imageUrl ?? "",
+      href: "#shop"
+    },
+    {
+      tag: "Community",
+      title: "Local Events & Gatherings",
+      description:
+        "Farmers markets, festivals, and neighborhood moments — the living culture of a community that takes care of itself.",
+      image: slideshowSlides[0]?.src ?? products[0]?.imageUrl ?? "",
+      href: "#shop"
+    }
+  ];
+
   return (
-    <main id="home" className="page-shell landing-page">
+    <main id="home">
       <section className="hero">
-        <div className="hero__grid">
-          <div className="hero__copy">
-            <div className="hero__kicker">Nevada County Storytelling</div>
-            <h1>Timeless photography inspired by Nevada County.</h1>
-            <p>
+        <div className="hero-inner page-shell">
+          <div className="hero-text">
+            <span className="hero-eyebrow">Nevada County, California</span>
+            <h1 className="hero-title">
+              Timeless photography inspired by <em>Nevada County.</em>
+            </h1>
+            <p className="hero-sub">
               Haley Wright &amp; Co. is a curated collection of local
               photography capturing the beauty, history, and everyday magic of
               Nevada County. Browse digital photo collections, choose your
               favorites, and download images for personal or creative use.
             </p>
-            <div className="hero__actions">
-              <Link className="button" href="#collections">
+            <div className="btn-group">
+              <Link className="btn-primary" href="#collections">
                 Explore Collections
               </Link>
-              <Link className="button-secondary" href="#shop">
+              <Link className="btn-outline" href="#shop">
                 Shop Photos
               </Link>
             </div>
-
-            <div className="hero__details">
-              <div className="hero-detail">
-                <span className="hero-detail__label">Rooted In</span>
-                <strong>Nevada County, California</strong>
-              </div>
-              <div className="hero-detail">
-                <span className="hero-detail__label">Focus</span>
-                <strong>Local beauty, history, and quiet moments</strong>
-              </div>
-            </div>
           </div>
 
-          <div className="hero__panel">
-            <HeroSlideshow slides={slideshowImages} />
-          </div>
+          <HeroSlideshow slides={slideshowSlides} />
         </div>
       </section>
 
-      <section id="collections" className="section section--soft">
-        <div className="section-card section-card--airy">
-          <div className="section-heading">
-            <div>
-              <div className="section-kicker">Collections</div>
-              <h2 className="section-title">
-                Thoughtful collections shaped by place and memory.
-              </h2>
-            </div>
-            <p className="section-copy">
-              Each collection is designed to feel like a quiet editorial story:
-              light, land, and lived-in Nevada County details gathered into
-              timeless imagery.
+      <section className="intro" id="about">
+        <div className="intro-inner">
+          <span className="section-eyebrow">About This Collection</span>
+          <h2>
+            Rooted in place.
+            <br />
+            Created with care.
+          </h2>
+          <div className="gold-divider" />
+          <p>
+            This collection was created from a love of photography,
+            storytelling, and the quiet details that make Nevada County feel
+            like home. From golden landscapes and historic spaces to local
+            events and everyday moments, each image is meant to preserve the
+            feeling of a place.
+          </p>
+        </div>
+      </section>
+
+      <section className="collections" id="collections">
+        <div className="collections-header">
+          <span className="section-eyebrow">Photography Collections</span>
+          <h2>Explore Collections</h2>
+        </div>
+        <CollectionsCarousel collections={collections} />
+      </section>
+
+      <section className="shop-preview" id="shop">
+        <div className="page-shell shop-preview__inner">
+          <div className="shop-preview__copy">
+            <span className="section-eyebrow">Shop Photos</span>
+            <h2>Choose from curated digital photographs available to download.</h2>
+            <p>
+              Browse selected images for personal use, creative inspiration, and
+              quiet editorial storytelling rooted in Nevada County.
             </p>
           </div>
 
-          <div className="collection-grid">
-            <article className="collection-card">
-              <span className="collection-card__index">01</span>
-              <h3>Nevada County Stories</h3>
-              <p>
-                Documentary-inspired images of towns, textures, and everyday
-                beauty found close to home.
-              </p>
-            </article>
-            <article className="collection-card">
-              <span className="collection-card__index">02</span>
-              <h3>Local Landscapes</h3>
-              <p>
-                Golden fields, pines, weathered roads, and shifting seasonal
-                light across the county.
-              </p>
-            </article>
-            <article className="collection-card">
-              <span className="collection-card__index">03</span>
-              <h3>Quiet Details</h3>
-              <p>
-                Soft, image-led studies of architecture, texture, and fleeting
-                moments that hold the mood of a place.
-              </p>
-            </article>
-          </div>
-
-          <div className="gallery-grid gallery-grid--editorial">
-            {featured.map((product) => (
-              <GalleryCard key={product.id} product={product} />
+          <div className="shop-preview__grid">
+            {products.slice(0, 4).map((product) => (
+              <Link
+                key={product.id}
+                className="shop-tile"
+                href={`/prints/${product.slug}`}
+              >
+                <div className="shop-tile__image-wrap">
+                  <img
+                    className="shop-tile__image"
+                    src={product.previewUrl || product.imageUrl}
+                    alt={product.title}
+                  />
+                </div>
+                <div className="shop-tile__body">
+                  <span className="shop-tile__tag">{product.category}</span>
+                  <h3>{product.title}</h3>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="shop" className="section">
-        <div className="section-card section-card--shop">
-          <div className="section-heading">
-            <div>
-              <div className="section-kicker">Shop</div>
-              <h2 className="section-title">
-                Bring home imagery that feels calm, local, and lasting.
-              </h2>
-            </div>
-            <p className="section-copy">
-              Browse selected photographs available as digital downloads for
-              personal projects, creative use, and print-friendly inspiration.
-            </p>
-          </div>
-
-          <div className="gallery-grid">
-            {gallery.map((product) => (
-              <GalleryCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="about" className="section">
-        <div className="section-card split-grid section-card--story">
-          <div>
-            <div className="section-kicker">About</div>
-            <h2 className="section-title">
-              A photography brand centered on beauty, history, and honest visual storytelling.
-            </h2>
-            <p className="section-copy">
-              Haley Wright &amp; Co. brings together imagery that feels refined
-              without losing warmth. The work draws from Nevada County life,
-              with an emphasis on softness, narrative, and the kind of details
-              that stay meaningful long after the moment has passed.
-            </p>
-          </div>
-
-          <div className="notice notice--light">
-            Built as a clean editorial storefront, this space can grow with new
-            collections, seasonal releases, and curated photo shops while
-            keeping the experience calm and image-first.
-          </div>
-        </div>
-      </section>
-
-      <section id="contact" className="section">
-        <div className="contact-banner">
-          <div>
-            <div className="section-kicker">Contact</div>
-            <h2 className="section-title">Inquire about collections, custom selections, or creative use.</h2>
-          </div>
-          <Link className="button" href="mailto:hello@haleywrightco.com">
-            Contact Haley Wright &amp; Co.
-          </Link>
-        </div>
+      <section className="quote-strip">
+        <blockquote>
+          &quot;Every photograph is a certificate of presence — and these images
+          feel like a love letter to this place.&quot;
+        </blockquote>
+        <div className="gold-divider" />
+        <cite>Haley Wright &amp; Co. — Nevada County, California</cite>
       </section>
     </main>
   );
