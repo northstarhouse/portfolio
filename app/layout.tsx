@@ -5,9 +5,9 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
 export const metadata: Metadata = {
-  title: "Your Name Studio",
+  title: "Haley Wright & Co.",
   description:
-    "Photography portfolio and digital download storefront powered by Supabase."
+    "Timeless Nevada County photography, digital collections, and editorial storytelling."
 };
 
 export default function RootLayout({

@@ -1,9 +1,9 @@
 export function SiteFooter() {
   return (
     <footer className="site-footer">
-      <div className="page-shell">
-        Built for digital photography sales, Supabase-managed uploads, and
-        future checkout fulfillment.
+      <div className="page-shell site-footer__inner">
+        <div>Haley Wright &amp; Co.</div>
+        <div>Nevada County photography, thoughtfully collected.</div>
       </div>
     </footer>
   );
