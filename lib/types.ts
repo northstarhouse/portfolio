@@ -1,5 +1,7 @@
 export type ProductCategory = "Digital Download" | "Preset Pack" | "Print License";
 
+export type { CollectionSlug } from "@/lib/collections";
+
 export type Product = {
   id: string;
   slug: string;
@@ -13,6 +15,7 @@ export type Product = {
   featured?: boolean;
   available?: boolean;
   sortOrder?: number | null;
+  collection?: import("@/lib/collections").CollectionSlug | null;
 };
 
 export type CartItem = Product & {

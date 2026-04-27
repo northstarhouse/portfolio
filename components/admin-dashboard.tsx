@@ -7,6 +7,7 @@ import {
   saveBrowserProduct,
   uploadBrowserImage
 } from "@/lib/supabase-browser";
+import { COLLECTIONS, CollectionSlug } from "@/lib/collections";
 import { SiteContent, Product, ProductCategory } from "@/lib/types";
 
 type AdminDashboardProps = {
@@ -247,6 +248,31 @@ export function AdminDashboard({
                       {categories.map((category) => (
                         <option key={category} value={category}>
                           {category}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="admin-field">
+                    <span>Album</span>
+                    <select
+                      value={product.collection ?? ""}
+                      onChange={(event) =>
+                        setProducts((current) =>
+                          current.map((entry) =>
+                            entry.id === product.id
+                              ? {
+                                  ...entry,
+                                  collection: (event.target.value || null) as CollectionSlug | null
+                                }
+                              : entry
+                          )
+                        )
+                      }
+                    >
+                      <option value="">— No album —</option>
+                      {COLLECTIONS.map((c) => (
+                        <option key={c.slug} value={c.slug}>
+                          {c.name}
                         </option>
                       ))}
                     </select>

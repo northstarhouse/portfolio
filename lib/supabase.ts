@@ -28,6 +28,7 @@ type SupabaseProductRow = {
   featured: boolean | null;
   available: boolean | null;
   sort_order: number | null;
+  collection: Product["collection"];
 };
 
 function mapProduct(row: SupabaseProductRow): Product {
@@ -43,7 +44,8 @@ function mapProduct(row: SupabaseProductRow): Product {
     downloadLabel: row.download_label,
     featured: row.featured ?? false,
     available: row.available ?? true,
-    sortOrder: row.sort_order
+    sortOrder: row.sort_order,
+    collection: row.collection ?? null
   };
 }
 
@@ -55,7 +57,7 @@ export async function getProducts() {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, slug, title, category, description, price, image_url, preview_url, download_label, featured, available, sort_order"
+      "id, slug, title, category, description, price, image_url, preview_url, download_label, featured, available, sort_order, collection"
     )
     .eq("available", true)
     .order("sort_order", { ascending: true, nullsFirst: false })

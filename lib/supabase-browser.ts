@@ -27,6 +27,7 @@ type SupabaseProductRow = {
   featured: boolean | null;
   available: boolean | null;
   sort_order: number | null;
+  collection: Product["collection"];
 };
 
 function mapProduct(row: SupabaseProductRow): Product {
@@ -42,7 +43,8 @@ function mapProduct(row: SupabaseProductRow): Product {
     downloadLabel: row.download_label,
     featured: row.featured ?? false,
     available: row.available ?? true,
-    sortOrder: row.sort_order
+    sortOrder: row.sort_order,
+    collection: row.collection ?? null
   };
 }
 
@@ -54,7 +56,7 @@ export async function fetchBrowserProducts(includeUnavailable = false) {
   let query = browserSupabase
     .from("products")
     .select(
-      "id, slug, title, category, description, price, image_url, preview_url, download_label, featured, available, sort_order"
+      "id, slug, title, category, description, price, image_url, preview_url, download_label, featured, available, sort_order, collection"
     )
     .order("sort_order", { ascending: true, nullsFirst: false })
     .order("featured", { ascending: false })
@@ -128,7 +130,8 @@ export async function saveBrowserProduct(product: Product) {
     download_label: product.downloadLabel,
     featured: product.featured ?? false,
     available: product.available ?? true,
-    sort_order: product.sortOrder ?? 0
+    sort_order: product.sortOrder ?? 0,
+    collection: product.collection ?? null
   });
 
   if (error) {
@@ -154,7 +157,8 @@ export async function createBrowserProduct(product: Omit<Product, "id">) {
     download_label: product.downloadLabel,
     featured: product.featured ?? false,
     available: product.available ?? true,
-    sort_order: existing.length + 1
+    sort_order: existing.length + 1,
+    collection: product.collection ?? null
   };
 
   const { error } = await browserSupabase.from("products").insert(payload);
@@ -162,6 +166,28 @@ export async function createBrowserProduct(product: Omit<Product, "id">) {
   if (error) {
     throw error;
   }
+}
+
+export async function fetchBrowserProductsByCollection(collectionSlug: string) {
+  if (!browserSupabase) {
+    return [];
+  }
+
+  const { data, error } = await browserSupabase
+    .from("products")
+    .select(
+      "id, slug, title, category, description, price, image_url, preview_url, download_label, featured, available, sort_order, collection"
+    )
+    .eq("collection", collectionSlug)
+    .eq("available", true)
+    .order("sort_order", { ascending: true, nullsFirst: false })
+    .order("title", { ascending: true });
+
+  if (error || !data?.length) {
+    return [];
+  }
+
+  return data.map(mapProduct);
 }
 
 export async function deleteBrowserProduct(id: string) {

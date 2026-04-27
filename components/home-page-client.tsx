@@ -11,6 +11,7 @@ import {
 } from "@/components/inline-admin";
 import { SafeImage } from "@/components/safe-image";
 import { useAdminMode } from "@/components/admin-mode-provider";
+import { COLLECTIONS } from "@/lib/collections";
 import {
   fetchBrowserProducts,
   fetchBrowserSiteContent,
@@ -74,7 +75,7 @@ export function HomePageClient({
   const collections = content.collections.items.map((item, index) => ({
     ...item,
     image: item.image ?? "",
-    href: products[index] ? `/prints/${products[index].slug}` : "#shop"
+    href: COLLECTIONS[index] ? `/collections/${COLLECTIONS[index].slug}` : "#collections"
   }));
 
   async function savePage() {

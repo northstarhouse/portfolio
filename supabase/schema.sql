@@ -11,8 +11,12 @@ create table if not exists public.products (
   featured boolean default false,
   available boolean default true,
   sort_order integer default 0,
+  collection text,
   created_at timestamptz default now()
 );
+
+-- Run this if the table already exists:
+-- alter table public.products add column if not exists collection text;
 
 create table if not exists public.site_content (
   id text primary key,
