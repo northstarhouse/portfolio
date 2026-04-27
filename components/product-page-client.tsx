@@ -84,14 +84,16 @@ export function ProductPageClient({
             className="product-image"
             onChange={(file) => {
               void uploadBrowserImage(file)
-                .then((publicUrl) => {
-                  setProduct((current) =>
-                    current
-                      ? { ...current, imageUrl: publicUrl, previewUrl: publicUrl }
-                      : current
-                  );
-                  setDirty(true);
-                  setStatus("Image updated. Save to publish.");
+                .then(async (publicUrl) => {
+                  const nextProduct = {
+                    ...product,
+                    imageUrl: publicUrl,
+                    previewUrl: publicUrl
+                  };
+
+                  setProduct(nextProduct);
+                  await saveBrowserProduct(nextProduct);
+                  setStatus("Image saved.");
                 })
                 .catch((error: unknown) => {
                   setStatus(

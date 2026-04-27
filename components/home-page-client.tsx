@@ -87,15 +87,22 @@ export function HomePageClient({
   async function replaceLandingImage(productId: string, file: File) {
     try {
       const publicUrl = await uploadBrowserImage(file);
-      setProducts((current) =>
-        current.map((product) =>
-          product.id === productId
-            ? { ...product, imageUrl: publicUrl, previewUrl: publicUrl }
-            : product
-        )
+      const nextProducts = products.map((product) =>
+        product.id === productId
+          ? { ...product, imageUrl: publicUrl, previewUrl: publicUrl }
+          : product
       );
-      setDirty(true);
-      setStatus("Image updated. Save to publish.");
+      const updatedProduct = nextProducts.find((product) => product.id === productId);
+
+      setProducts(nextProducts);
+
+      if (!updatedProduct) {
+        setStatus("Image updated in preview only.");
+        return;
+      }
+
+      await saveBrowserProduct(updatedProduct);
+      setStatus("Image saved.");
     } catch (error) {
       setStatus(
         error instanceof Error
