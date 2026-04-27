@@ -1,8 +1,8 @@
 import { ProductPageClient } from "@/components/product-page-client";
-import { fallbackProducts } from "@/lib/fallback-products";
+import { getProducts, getProductBySlug } from "@/lib/supabase";
 
 export async function generateStaticParams() {
-  const products = fallbackProducts;
+  const products = await getProducts();
   return products.length > 0
     ? products.map((product) => ({ slug: product.slug }))
     : [{ slug: "__placeholder__" }];
@@ -14,9 +14,7 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = fallbackProducts.find((entry) => entry.slug === slug) ?? null;
+  const product = await getProductBySlug(slug);
 
-  return (
-    <ProductPageClient slug={slug} initialProduct={product} />
-  );
+  return <ProductPageClient slug={slug} initialProduct={product} />;
 }

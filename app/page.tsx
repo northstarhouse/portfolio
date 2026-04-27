@@ -1,12 +1,11 @@
 import { HomePageClient } from "@/components/home-page-client";
-import { fallbackProducts } from "@/lib/fallback-products";
-import { defaultSiteContent } from "@/lib/site-content";
+import { getProducts, getPublicSiteContent } from "@/lib/supabase";
 
 export default async function Home() {
-  return (
-    <HomePageClient
-      initialProducts={fallbackProducts}
-      initialContent={defaultSiteContent}
-    />
-  );
+  const [products, content] = await Promise.all([
+    getProducts(),
+    getPublicSiteContent()
+  ]);
+
+  return <HomePageClient initialProducts={products} initialContent={content} />;
 }
