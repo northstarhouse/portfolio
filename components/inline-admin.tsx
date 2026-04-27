@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { flushSync } from "react-dom";
 import { useAdminMode } from "@/components/admin-mode-provider";
 import { SafeImage } from "@/components/safe-image";
 
@@ -53,8 +54,10 @@ export function InlineEditableText({
   }
 
   function commit() {
-    onChange(draft);
-    setEditing(false);
+    flushSync(() => {
+      onChange(draft);
+      setEditing(false);
+    });
   }
 
   if (editing) {
@@ -155,6 +158,18 @@ export function InlineEditToolbar({
 }: InlineEditToolbarProps) {
   const { enabled, lock } = useAdminMode();
 
+  function handleSave() {
+    const activeElement = document.activeElement;
+
+    if (activeElement instanceof HTMLElement) {
+      activeElement.blur();
+    }
+
+    window.requestAnimationFrame(() => {
+      onSave();
+    });
+  }
+
   if (!enabled) {
     return null;
   }
@@ -169,7 +184,12 @@ export function InlineEditToolbar({
         <Link className="button-secondary" href="/admin/dashboard">
           Manage Photos
         </Link>
-        <button className="button" type="button" disabled={!dirty || pending} onClick={onSave}>
+        <button
+          className="button"
+          type="button"
+          disabled={!dirty || pending}
+          onClick={handleSave}
+        >
           {pending ? "Saving..." : "Save"}
         </button>
         <button className="button-secondary" type="button" onClick={lock}>
