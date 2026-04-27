@@ -108,7 +108,13 @@ export function InlineEditableImage({
     <label
       className={`${wrapperClassName ?? ""}${enabled ? " inline-editable-image" : ""}`}
     >
-      <img className={className} src={src} alt={alt} />
+      {src ? (
+        <img className={className} src={src} alt={alt} />
+      ) : (
+        <div className={`${className ?? ""} inline-editable-image__placeholder`}>
+          <span>Upload image</span>
+        </div>
+      )}
       {enabled ? (
         <>
           <span className="inline-editable-image__badge">Replace image</span>

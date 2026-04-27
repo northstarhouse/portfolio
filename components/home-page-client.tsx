@@ -53,14 +53,14 @@ export function HomePageClient({
   }, []);
 
   const heroImages = useMemo(() => {
-    const configuredImages = content.hero.images?.filter(Boolean) ?? [];
+    const configuredImages = [...(content.hero.images ?? [])];
 
-    if (configuredImages.length > 0) {
-      return configuredImages;
+    while (configuredImages.length < 4) {
+      configuredImages.push("");
     }
 
-    return products.slice(0, 4).map((product) => product.imageUrl);
-  }, [content.hero.images, products]);
+    return configuredImages.slice(0, 4);
+  }, [content.hero.images]);
 
   const visibleProducts = useMemo(() => products.slice(0, 4), [products]);
   const slideshowSlides = heroImages.map((imageUrl, index) => ({
@@ -70,12 +70,8 @@ export function HomePageClient({
 
   const collections = content.collections.items.map((item, index) => ({
     ...item,
-    image:
-      slideshowSlides[index]?.src ??
-      products[index]?.imageUrl ??
-      slideshowSlides[0]?.src ??
-      "",
-    href: "#shop"
+    image: "",
+    href: products[index] ? `/prints/${products[index].slug}` : "#shop"
   }));
 
   async function savePage() {
@@ -353,27 +349,33 @@ export function HomePageClient({
             />
           </div>
 
-          <div className="shop-preview__grid">
-            {products.slice(0, 4).map((product) => (
-              <Link
-                key={product.id}
-                className="shop-tile"
-                href={`/prints/${product.slug}`}
-              >
-                <div className="shop-tile__image-wrap">
-                  <img
-                    className="shop-tile__image"
-                    src={product.previewUrl || product.imageUrl}
-                    alt={product.title}
-                  />
-                </div>
-                <div className="shop-tile__body">
-                  <span className="shop-tile__tag">{product.category}</span>
-                  <h3>{product.title}</h3>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {products.length > 0 ? (
+            <div className="shop-preview__grid">
+              {products.slice(0, 4).map((product) => (
+                <Link
+                  key={product.id}
+                  className="shop-tile"
+                  href={`/prints/${product.slug}`}
+                >
+                  <div className="shop-tile__image-wrap">
+                    <img
+                      className="shop-tile__image"
+                      src={product.previewUrl || product.imageUrl}
+                      alt={product.title}
+                    />
+                  </div>
+                  <div className="shop-tile__body">
+                    <span className="shop-tile__tag">{product.category}</span>
+                    <h3>{product.title}</h3>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state shop-preview__empty">
+              Upload your first photo in edit mode to populate the shop.
+            </div>
+          )}
         </div>
       </section>
 

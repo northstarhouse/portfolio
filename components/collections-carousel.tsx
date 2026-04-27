@@ -74,7 +74,11 @@ export function CollectionsCarousel({
           {collections.map((collection, index) => (
             <article key={collection.title} className="card">
               <div className="card-img">
-                <img src={collection.image} alt={collection.title} />
+                {collection.image ? (
+                  <img src={collection.image} alt={collection.title} />
+                ) : (
+                  <div className="card-img__empty">Upload collection image</div>
+                )}
               </div>
               <div className="card-body">
                 <InlineEditableText

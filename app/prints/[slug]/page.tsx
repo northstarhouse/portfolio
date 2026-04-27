@@ -3,7 +3,9 @@ import { fallbackProducts } from "@/lib/fallback-products";
 
 export async function generateStaticParams() {
   const products = fallbackProducts;
-  return products.map((product) => ({ slug: product.slug }));
+  return products.length > 0
+    ? products.map((product) => ({ slug: product.slug }))
+    : [{ slug: "__placeholder__" }];
 }
 
 export default async function ProductPage({
