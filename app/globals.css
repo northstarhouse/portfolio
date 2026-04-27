@@ -318,6 +318,7 @@ select {
 }
 
 .hero-title em {
+  display: block;
   font-style: italic;
   color: var(--taupe-dark);
 }
