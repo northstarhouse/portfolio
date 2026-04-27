@@ -32,6 +32,10 @@ jobs:
         run: npm ci
 
       - name: Build static export
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://xmwezivwzvvwjybxkelw.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_6B3ZO0u2Kt_4lX0y7wynwQ_NB2zAsw2
+          NEXT_PUBLIC_SUPABASE_IMAGE_BUCKET: portfolio-previews
         run: npm run build
 
       - name: Upload Pages artifact
