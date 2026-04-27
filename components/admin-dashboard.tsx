@@ -42,6 +42,22 @@ export function AdminDashboard({
     }
   }
 
+  function handleSaveProduct(productId: string) {
+    const activeElement = document.activeElement;
+
+    if (activeElement instanceof HTMLElement) {
+      activeElement.blur();
+    }
+
+    window.requestAnimationFrame(() => {
+      const latestProduct = products.find((entry) => entry.id === productId);
+
+      if (latestProduct) {
+        void saveProduct(latestProduct);
+      }
+    });
+  }
+
   async function uploadImage(file: File) {
     return uploadBrowserImage(file);
   }
@@ -320,7 +336,7 @@ export function AdminDashboard({
                   <button
                     className="button"
                     type="button"
-                    onClick={() => void saveProduct(product)}
+                    onClick={() => handleSaveProduct(product.id)}
                   >
                     Save
                   </button>
