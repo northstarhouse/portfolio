@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { InlineEditableText } from "@/components/inline-admin";
 
 type CollectionItem = {
   tag: string;
@@ -13,6 +14,10 @@ type CollectionItem = {
 
 type CollectionsCarouselProps = {
   collections: CollectionItem[];
+  onUpdateCollection?: (
+    index: number,
+    patch: Partial<Pick<CollectionItem, "tag" | "title" | "description">>
+  ) => void;
 };
 
 function getVisibleCards(width: number) {
@@ -28,7 +33,8 @@ function getVisibleCards(width: number) {
 }
 
 export function CollectionsCarousel({
-  collections
+  collections,
+  onUpdateCollection
 }: CollectionsCarouselProps) {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [visibleCards, setVisibleCards] = useState(3);
@@ -65,15 +71,33 @@ export function CollectionsCarousel({
           className="carousel-track"
           style={{ transform: `translateX(calc(-${carouselIndex} * (360px + 28px)))` }}
         >
-          {collections.map((collection) => (
+          {collections.map((collection, index) => (
             <article key={collection.title} className="card">
               <div className="card-img">
                 <img src={collection.image} alt={collection.title} />
               </div>
               <div className="card-body">
-                <span className="card-tag">{collection.tag}</span>
-                <h3 className="card-title">{collection.title}</h3>
-                <p className="card-desc">{collection.description}</p>
+                <InlineEditableText
+                  as="span"
+                  className="card-tag"
+                  value={collection.tag}
+                  onChange={(value) => onUpdateCollection?.(index, { tag: value })}
+                />
+                <InlineEditableText
+                  as="h3"
+                  className="card-title"
+                  value={collection.title}
+                  onChange={(value) => onUpdateCollection?.(index, { title: value })}
+                />
+                <InlineEditableText
+                  as="p"
+                  className="card-desc"
+                  multiline
+                  value={collection.description}
+                  onChange={(value) =>
+                    onUpdateCollection?.(index, { description: value })
+                  }
+                />
                 <Link href={collection.href} className="card-btn">
                   View Collection
                 </Link>

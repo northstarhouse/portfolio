@@ -1230,6 +1230,105 @@ footer {
   gap: 12px;
 }
 
+.inline-editable {
+  cursor: text;
+  outline: 1px dashed transparent;
+  outline-offset: 4px;
+}
+
+.inline-editable:hover {
+  outline-color: rgba(184, 151, 90, 0.45);
+}
+
+.inline-editable__input {
+  width: 100%;
+  border: 1px solid rgba(184, 151, 90, 0.45);
+  background: rgba(255, 252, 249, 0.96);
+  color: inherit;
+  padding: 0.1em 0.2em;
+}
+
+.inline-editable__input--multiline {
+  min-height: 120px;
+  padding: 0.6em 0.75em;
+  resize: vertical;
+}
+
+.inline-editable-image {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.inline-editable-image__badge {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 7px 10px;
+  background: rgba(46, 42, 38, 0.78);
+  color: var(--cream);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.inline-edit-toolbar {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  z-index: 130;
+  transform: translateX(-50%);
+  width: min(calc(100% - 32px), 860px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  background: rgba(254, 252, 249, 0.94);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 22px 40px rgba(46, 42, 38, 0.12);
+}
+
+.inline-edit-toolbar__meta {
+  display: grid;
+  gap: 2px;
+}
+
+.inline-edit-toolbar__meta strong {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.inline-edit-toolbar__meta span {
+  font-size: 13px;
+  color: var(--text-mid);
+}
+
+.inline-edit-toolbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.hero-admin-slides {
+  display: grid;
+  gap: 14px;
+}
+
+.hero-admin-slides__picker {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.hero-admin-slides__thumb-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
 @media (max-width: 900px) {
   .header-inner {
     padding: 0 24px;
@@ -1300,7 +1399,8 @@ footer {
   .product-layout,
   .admin-grid,
   .admin-grid--collections,
-  .admin-product-card {
+  .admin-product-card,
+  .hero-admin-slides__picker {
     grid-template-columns: 1fr 1fr;
     gap: 32px;
   }
@@ -1373,7 +1473,17 @@ footer {
   .admin-toolbar,
   .admin-toolbar__actions,
   .admin-landing-images,
-  .site-admin-modal__actions {
+  .site-admin-modal__actions,
+  .inline-edit-toolbar,
+  .inline-edit-toolbar__actions,
+  .hero-admin-slides__picker {
     display: grid;
+  }
+
+  .inline-edit-toolbar {
+    left: 16px;
+    right: 16px;
+    transform: none;
+    width: auto;
   }
 }

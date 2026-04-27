@@ -1,7 +1,7 @@
 "use client";
 
 const ADMIN_PASSWORD = "dream";
-const ADMIN_SESSION_KEY = "hw-admin-unlocked";
+export const ADMIN_SESSION_KEY = "hw-admin-unlocked";
 
 export function tryClientAdminLogin(password: string) {
   if (password !== ADMIN_PASSWORD) {

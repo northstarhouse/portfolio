@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
+import { AdminModeProvider } from "@/components/admin-mode-provider";
 import { CartProvider } from "@/components/cart-context";
 import { SiteAdminAccess } from "@/components/site-admin-access";
 import { SiteFooter } from "@/components/site-footer";
@@ -34,10 +35,12 @@ export default function RootLayout({
     <html lang="en" className={`${cormorant.variable} ${jost.variable}`}>
       <body>
         <CartProvider>
-          <SiteHeader />
-          <SiteAdminAccess />
-          {children}
-          <SiteFooter />
+          <AdminModeProvider>
+            <SiteHeader />
+            <SiteAdminAccess />
+            {children}
+            <SiteFooter />
+          </AdminModeProvider>
         </CartProvider>
       </body>
     </html>

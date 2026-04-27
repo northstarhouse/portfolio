@@ -1,10 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CollectionsCarousel } from "@/components/collections-carousel";
 import { HeroSlideshow } from "@/components/hero-slideshow";
-import { fetchBrowserProducts, fetchBrowserSiteContent } from "@/lib/supabase-browser";
+import {
+  InlineEditableImage,
+  InlineEditableText,
+  InlineEditToolbar
+} from "@/components/inline-admin";
+import {
+  fetchBrowserProducts,
+  fetchBrowserSiteContent,
+  saveBrowserProduct,
+  saveBrowserSiteContent,
+  uploadBrowserImage
+} from "@/lib/supabase-browser";
 import { Product, SiteContent } from "@/lib/types";
 
 type HomePageClientProps = {
@@ -18,6 +29,9 @@ export function HomePageClient({
 }: HomePageClientProps) {
   const [products, setProducts] = useState(initialProducts);
   const [content, setContent] = useState(initialContent);
+  const [pending, setPending] = useState(false);
+  const [status, setStatus] = useState("");
+  const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -38,7 +52,8 @@ export function HomePageClient({
     };
   }, []);
 
-  const slideshowSlides = products.slice(0, 4).map((product) => ({
+  const visibleProducts = useMemo(() => products.slice(0, 4), [products]);
+  const slideshowSlides = visibleProducts.map((product) => ({
     src: product.imageUrl,
     alt: product.title
   }));
@@ -53,60 +68,271 @@ export function HomePageClient({
     href: "#shop"
   }));
 
+  async function savePage() {
+    setPending(true);
+    setStatus("");
+
+    try {
+      await saveBrowserSiteContent(content);
+      await Promise.all(visibleProducts.map((product) => saveBrowserProduct(product)));
+      setDirty(false);
+      setStatus("Saved.");
+    } catch {
+      setStatus("Save failed.");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function replaceLandingImage(productId: string, file: File) {
+    try {
+      const publicUrl = await uploadBrowserImage(file);
+      setProducts((current) =>
+        current.map((product) =>
+          product.id === productId
+            ? { ...product, imageUrl: publicUrl, previewUrl: publicUrl }
+            : product
+        )
+      );
+      setDirty(true);
+      setStatus("Image updated. Save to publish.");
+    } catch {
+      setStatus("Image upload failed.");
+    }
+  }
+
   return (
     <main id="home">
+      <InlineEditToolbar dirty={dirty} pending={pending} status={status} onSave={savePage} />
+
       <section className="hero">
         <div className="hero-inner page-shell">
           <div className="hero-text">
-            <span className="hero-eyebrow">{content.hero.eyebrow}</span>
+            <InlineEditableText
+              as="span"
+              className="hero-eyebrow"
+              value={content.hero.eyebrow}
+              onChange={(value) => {
+                setContent((current) => ({
+                  ...current,
+                  hero: { ...current.hero, eyebrow: value }
+                }));
+                setDirty(true);
+              }}
+            />
+
             <h1 className="hero-title">
-              {content.hero.title} <em>{content.hero.emphasizedTitle}</em>
+              <InlineEditableText
+                as="span"
+                value={content.hero.title}
+                onChange={(value) => {
+                  setContent((current) => ({
+                    ...current,
+                    hero: { ...current.hero, title: value }
+                  }));
+                  setDirty(true);
+                }}
+              />{" "}
+              <em>
+                <InlineEditableText
+                  as="span"
+                  value={content.hero.emphasizedTitle}
+                  onChange={(value) => {
+                    setContent((current) => ({
+                      ...current,
+                      hero: { ...current.hero, emphasizedTitle: value }
+                    }));
+                    setDirty(true);
+                  }}
+                />
+              </em>
             </h1>
-            <p className="hero-sub">{content.hero.description}</p>
+
+            <InlineEditableText
+              as="p"
+              className="hero-sub"
+              multiline
+              value={content.hero.description}
+              onChange={(value) => {
+                setContent((current) => ({
+                  ...current,
+                  hero: { ...current.hero, description: value }
+                }));
+                setDirty(true);
+              }}
+            />
+
             <div className="btn-group">
               <Link className="btn-primary" href="#collections">
-                {content.hero.primaryCta}
+                <InlineEditableText
+                  as="span"
+                  value={content.hero.primaryCta}
+                  onChange={(value) => {
+                    setContent((current) => ({
+                      ...current,
+                      hero: { ...current.hero, primaryCta: value }
+                    }));
+                    setDirty(true);
+                  }}
+                />
               </Link>
               <Link className="btn-outline" href="#shop">
-                {content.hero.secondaryCta}
+                <InlineEditableText
+                  as="span"
+                  value={content.hero.secondaryCta}
+                  onChange={(value) => {
+                    setContent((current) => ({
+                      ...current,
+                      hero: { ...current.hero, secondaryCta: value }
+                    }));
+                    setDirty(true);
+                  }}
+                />
               </Link>
             </div>
           </div>
 
-          <HeroSlideshow slides={slideshowSlides} />
+          <div className="hero-admin-slides">
+            <HeroSlideshow slides={slideshowSlides} />
+            <div className="hero-admin-slides__picker">
+              {visibleProducts.map((product) => (
+                <InlineEditableImage
+                  key={product.id}
+                  src={product.previewUrl || product.imageUrl}
+                  alt={product.title}
+                  wrapperClassName="hero-admin-slides__thumb"
+                  className="hero-admin-slides__thumb-image"
+                  onChange={(file) => void replaceLandingImage(product.id, file)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
       <section className="intro" id="about">
         <div className="intro-inner">
-          <span className="section-eyebrow">{content.about.eyebrow}</span>
-          <h2>
-            {content.about.title.split("\n").map((line, index, lines) => (
-              <span key={`${line}-${index}`}>
-                {line}
-                {index < lines.length - 1 ? <br /> : null}
-              </span>
-            ))}
-          </h2>
+          <InlineEditableText
+            as="span"
+            className="section-eyebrow"
+            value={content.about.eyebrow}
+            onChange={(value) => {
+              setContent((current) => ({
+                ...current,
+                about: { ...current.about, eyebrow: value }
+              }));
+              setDirty(true);
+            }}
+          />
+          <InlineEditableText
+            as="h2"
+            multiline
+            value={content.about.title}
+            onChange={(value) => {
+              setContent((current) => ({
+                ...current,
+                about: { ...current.about, title: value }
+              }));
+              setDirty(true);
+            }}
+          />
           <div className="gold-divider" />
-          <p>{content.about.body}</p>
+          <InlineEditableText
+            as="p"
+            multiline
+            value={content.about.body}
+            onChange={(value) => {
+              setContent((current) => ({
+                ...current,
+                about: { ...current.about, body: value }
+              }));
+              setDirty(true);
+            }}
+          />
         </div>
       </section>
 
       <section className="collections" id="collections">
         <div className="collections-header">
-          <span className="section-eyebrow">{content.collections.eyebrow}</span>
-          <h2>{content.collections.title}</h2>
+          <InlineEditableText
+            as="span"
+            className="section-eyebrow"
+            value={content.collections.eyebrow}
+            onChange={(value) => {
+              setContent((current) => ({
+                ...current,
+                collections: { ...current.collections, eyebrow: value }
+              }));
+              setDirty(true);
+            }}
+          />
+          <InlineEditableText
+            as="h2"
+            value={content.collections.title}
+            onChange={(value) => {
+              setContent((current) => ({
+                ...current,
+                collections: { ...current.collections, title: value }
+              }));
+              setDirty(true);
+            }}
+          />
         </div>
-        <CollectionsCarousel collections={collections} />
+        <CollectionsCarousel
+          collections={collections}
+          onUpdateCollection={(index, patch) => {
+            setContent((current) => ({
+              ...current,
+              collections: {
+                ...current.collections,
+                items: current.collections.items.map((item, itemIndex) =>
+                  itemIndex === index ? { ...item, ...patch } : item
+                )
+              }
+            }));
+            setDirty(true);
+          }}
+        />
       </section>
 
       <section className="shop-preview" id="shop">
         <div className="page-shell shop-preview__inner">
           <div className="shop-preview__copy">
-            <span className="section-eyebrow">{content.shop.eyebrow}</span>
-            <h2>{content.shop.title}</h2>
-            <p>{content.shop.description}</p>
+            <InlineEditableText
+              as="span"
+              className="section-eyebrow"
+              value={content.shop.eyebrow}
+              onChange={(value) => {
+                setContent((current) => ({
+                  ...current,
+                  shop: { ...current.shop, eyebrow: value }
+                }));
+                setDirty(true);
+              }}
+            />
+            <InlineEditableText
+              as="h2"
+              value={content.shop.title}
+              onChange={(value) => {
+                setContent((current) => ({
+                  ...current,
+                  shop: { ...current.shop, title: value }
+                }));
+                setDirty(true);
+              }}
+            />
+            <InlineEditableText
+              as="p"
+              multiline
+              value={content.shop.description}
+              onChange={(value) => {
+                setContent((current) => ({
+                  ...current,
+                  shop: { ...current.shop, description: value }
+                }));
+                setDirty(true);
+              }}
+            />
           </div>
 
           <div className="shop-preview__grid">
@@ -134,9 +360,30 @@ export function HomePageClient({
       </section>
 
       <section className="quote-strip">
-        <blockquote>{content.quote.text}</blockquote>
+        <InlineEditableText
+          as="blockquote"
+          multiline
+          value={content.quote.text}
+          onChange={(value) => {
+            setContent((current) => ({
+              ...current,
+              quote: { ...current.quote, text: value }
+            }));
+            setDirty(true);
+          }}
+        />
         <div className="gold-divider" />
-        <cite>{content.quote.cite}</cite>
+        <InlineEditableText
+          as="cite"
+          value={content.quote.cite}
+          onChange={(value) => {
+            setContent((current) => ({
+              ...current,
+              quote: { ...current.quote, cite: value }
+            }));
+            setDirty(true);
+          }}
+        />
       </section>
     </main>
   );

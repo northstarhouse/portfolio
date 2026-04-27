@@ -3,8 +3,16 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AddToCartButton } from "@/components/add-to-cart-button";
-import { formatCurrency } from "@/lib/format";
-import { fetchBrowserProductBySlug } from "@/lib/supabase-browser";
+import {
+  InlineEditableImage,
+  InlineEditableText,
+  InlineEditToolbar
+} from "@/components/inline-admin";
+import {
+  fetchBrowserProductBySlug,
+  saveBrowserProduct,
+  uploadBrowserImage
+} from "@/lib/supabase-browser";
 import { Product } from "@/lib/types";
 
 type ProductPageClientProps = {
@@ -17,6 +25,9 @@ export function ProductPageClient({
   initialProduct
 }: ProductPageClientProps) {
   const [product, setProduct] = useState<Product | null>(initialProduct);
+  const [dirty, setDirty] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -42,21 +53,96 @@ export function ProductPageClient({
     );
   }
 
+  async function savePage() {
+    if (!product) {
+      return;
+    }
+
+    setPending(true);
+    setStatus("");
+
+    try {
+      await saveBrowserProduct(product);
+      setDirty(false);
+      setStatus("Saved.");
+    } catch {
+      setStatus("Save failed.");
+    } finally {
+      setPending(false);
+    }
+  }
+
   return (
     <main className="page-shell">
+      <InlineEditToolbar dirty={dirty} pending={pending} status={status} onSave={savePage} />
+
       <section className="product-layout">
         <div>
-          <img className="product-image" src={product.imageUrl} alt={product.title} />
+          <InlineEditableImage
+            src={product.imageUrl}
+            alt={product.title}
+            className="product-image"
+            onChange={(file) => {
+              void uploadBrowserImage(file).then((publicUrl) => {
+                setProduct((current) =>
+                  current
+                    ? { ...current, imageUrl: publicUrl, previewUrl: publicUrl }
+                    : current
+                );
+                setDirty(true);
+                setStatus("Image updated. Save to publish.");
+              });
+            }}
+          />
         </div>
 
         <aside className="product-panel">
           <div className="badge">{product.category}</div>
-          <h1 className="product-title">{product.title}</h1>
-          <p className="product-copy">{product.description}</p>
+          <InlineEditableText
+            as="h1"
+            className="product-title"
+            value={product.title}
+            onChange={(value) => {
+              setProduct((current) => (current ? { ...current, title: value } : current));
+              setDirty(true);
+            }}
+          />
+          <InlineEditableText
+            as="p"
+            className="product-copy"
+            multiline
+            value={product.description}
+            onChange={(value) => {
+              setProduct((current) =>
+                current ? { ...current, description: value } : current
+              );
+              setDirty(true);
+            }}
+          />
 
           <div className="product-meta">
-            <span className="price">{formatCurrency(product.price)}</span>
-            <span className="muted">{product.downloadLabel}</span>
+            <InlineEditableText
+              as="span"
+              className="price"
+              value={String(product.price)}
+              onChange={(value) => {
+                setProduct((current) =>
+                  current ? { ...current, price: Number(value) || current.price } : current
+                );
+                setDirty(true);
+              }}
+            />
+            <InlineEditableText
+              as="span"
+              className="muted"
+              value={product.downloadLabel}
+              onChange={(value) => {
+                setProduct((current) =>
+                  current ? { ...current, downloadLabel: value } : current
+                );
+                setDirty(true);
+              }}
+            />
           </div>
 
           <div className="stack-inline">

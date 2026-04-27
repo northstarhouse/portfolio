@@ -1,12 +1,13 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { tryClientAdminLogin } from "@/lib/client-admin-auth";
+import { useAdminMode } from "@/components/admin-mode-provider";
 
 export function SiteAdminAccess() {
   const pathname = usePathname();
-  const router = useRouter();
+  const { enabled, unlock, lock } = useAdminMode();
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
@@ -21,7 +22,7 @@ export function SiteAdminAccess() {
     setError("");
     setPending(true);
 
-    if (!tryClientAdminLogin(password)) {
+    if (!unlock(password)) {
       setPending(false);
       setError("Incorrect password.");
       return;
@@ -30,8 +31,6 @@ export function SiteAdminAccess() {
     setPending(false);
     setOpen(false);
     setPassword("");
-    router.push("/admin/dashboard");
-    router.refresh();
   }
 
   return (
@@ -39,8 +38,13 @@ export function SiteAdminAccess() {
       <button
         type="button"
         className="site-admin-fab"
-        aria-label="Open admin login"
+        aria-label={enabled ? "Exit edit mode" : "Open admin login"}
         onClick={() => {
+          if (enabled) {
+            lock();
+            return;
+          }
+
           setOpen(true);
           setError("");
         }}
@@ -63,8 +67,7 @@ export function SiteAdminAccess() {
             <div className="section-kicker">Admin Access</div>
             <h2 className="admin-title">Enter edit mode</h2>
             <p className="muted">
-              Enter the admin password to open the Haley Wright &amp; Co.
-              dashboard.
+              Enter the admin password to edit the live page directly.
             </p>
 
             <form className="admin-login-form" onSubmit={handleSubmit}>
@@ -83,6 +86,9 @@ export function SiteAdminAccess() {
               {error ? <p className="admin-error">{error}</p> : null}
 
               <div className="site-admin-modal__actions">
+                <Link className="button-secondary" href="/admin/dashboard">
+                  Manage Photos
+                </Link>
                 <button
                   type="button"
                   className="button-secondary"
