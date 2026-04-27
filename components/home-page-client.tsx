@@ -77,8 +77,8 @@ export function HomePageClient({
       await Promise.all(visibleProducts.map((product) => saveBrowserProduct(product)));
       setDirty(false);
       setStatus("Saved.");
-    } catch {
-      setStatus("Save failed.");
+    } catch (error) {
+      setStatus(error instanceof Error ? `Save failed: ${error.message}` : "Save failed.");
     } finally {
       setPending(false);
     }
@@ -96,8 +96,12 @@ export function HomePageClient({
       );
       setDirty(true);
       setStatus("Image updated. Save to publish.");
-    } catch {
-      setStatus("Image upload failed.");
+    } catch (error) {
+      setStatus(
+        error instanceof Error
+          ? `Image upload failed: ${error.message}`
+          : "Image upload failed."
+      );
     }
   }
 

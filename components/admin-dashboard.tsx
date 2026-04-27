@@ -118,9 +118,13 @@ export function AdminDashboard({
       await saveBrowserSiteContent(nextContent);
       setPending(false);
       setStatus("Landing page saved.");
-    } catch {
+    } catch (error) {
       setPending(false);
-      setStatus("Landing page save failed.");
+      setStatus(
+        error instanceof Error
+          ? `Landing page save failed: ${error.message}`
+          : "Landing page save failed."
+      );
     }
   }
 
@@ -128,8 +132,12 @@ export function AdminDashboard({
     try {
       await saveBrowserProduct(product);
       setStatus(`Saved ${product.title}.`);
-    } catch {
-      setStatus(`Could not save ${product.title}.`);
+    } catch (error) {
+      setStatus(
+        error instanceof Error
+          ? `Could not save ${product.title}: ${error.message}`
+          : `Could not save ${product.title}.`
+      );
     }
   }
 
@@ -156,8 +164,12 @@ export function AdminDashboard({
       if (updatedProduct) {
         await saveProduct(updatedProduct);
       }
-    } catch {
-      setStatus("Image upload failed.");
+    } catch (error) {
+      setStatus(
+        error instanceof Error
+          ? `Image upload failed: ${error.message}`
+          : "Image upload failed."
+      );
     }
   }
 
@@ -166,8 +178,12 @@ export function AdminDashboard({
     try {
       await reorderBrowserProducts(nextProducts);
       setStatus("Collection order updated.");
-    } catch {
-      setStatus("Could not save order.");
+    } catch (error) {
+      setStatus(
+        error instanceof Error
+          ? `Could not save order: ${error.message}`
+          : "Could not save order."
+      );
     }
   }
 
@@ -176,8 +192,10 @@ export function AdminDashboard({
       await deleteBrowserProduct(id);
       setProducts((current) => current.filter((product) => product.id !== id));
       setStatus("Photo removed.");
-    } catch {
-      setStatus("Delete failed.");
+    } catch (error) {
+      setStatus(
+        error instanceof Error ? `Delete failed: ${error.message}` : "Delete failed."
+      );
     }
   }
 
@@ -234,8 +252,12 @@ export function AdminDashboard({
         available: true
       });
       setStatus("New photo added.");
-    } catch {
-      setStatus("New photo upload failed.");
+    } catch (error) {
+      setStatus(
+        error instanceof Error
+          ? `New photo upload failed: ${error.message}`
+          : "New photo upload failed."
+      );
     }
   }
 

@@ -65,8 +65,8 @@ export function ProductPageClient({
       await saveBrowserProduct(product);
       setDirty(false);
       setStatus("Saved.");
-    } catch {
-      setStatus("Save failed.");
+    } catch (error) {
+      setStatus(error instanceof Error ? `Save failed: ${error.message}` : "Save failed.");
     } finally {
       setPending(false);
     }
@@ -83,15 +83,23 @@ export function ProductPageClient({
             alt={product.title}
             className="product-image"
             onChange={(file) => {
-              void uploadBrowserImage(file).then((publicUrl) => {
-                setProduct((current) =>
-                  current
-                    ? { ...current, imageUrl: publicUrl, previewUrl: publicUrl }
-                    : current
-                );
-                setDirty(true);
-                setStatus("Image updated. Save to publish.");
-              });
+              void uploadBrowserImage(file)
+                .then((publicUrl) => {
+                  setProduct((current) =>
+                    current
+                      ? { ...current, imageUrl: publicUrl, previewUrl: publicUrl }
+                      : current
+                  );
+                  setDirty(true);
+                  setStatus("Image updated. Save to publish.");
+                })
+                .catch((error: unknown) => {
+                  setStatus(
+                    error instanceof Error
+                      ? `Image upload failed: ${error.message}`
+                      : "Image upload failed."
+                  );
+                });
             }}
           />
         </div>
