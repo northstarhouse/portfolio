@@ -58,14 +58,6 @@ export function CollectionsCarousel({
 
   const maxIndex = Math.max(0, collections.length - visibleCards);
 
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setCarouselIndex((current) => (current >= maxIndex ? 0 : current + 1));
-    }, 7000);
-
-    return () => window.clearInterval(interval);
-  }, [maxIndex]);
-
   return (
     <div className="carousel-wrap">
       <div className="carousel-track-outer">
