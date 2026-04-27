@@ -383,7 +383,7 @@ select {
   border-radius: 4px;
   overflow: hidden;
   aspect-ratio: 16 / 10;
-  max-height: 320px;
+  width: 100%;
   background: var(--beige);
 }
 
