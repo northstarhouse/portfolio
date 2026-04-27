@@ -685,6 +685,7 @@ select {
 }
 
 .shop-tile__image-wrap {
+  display: block;
   aspect-ratio: 4 / 5;
   overflow: hidden;
   background: var(--beige);

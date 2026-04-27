@@ -10,9 +10,11 @@ import {
   InlineEditToolbar
 } from "@/components/inline-admin";
 import { SafeImage } from "@/components/safe-image";
+import { useAdminMode } from "@/components/admin-mode-provider";
 import {
   fetchBrowserProducts,
   fetchBrowserSiteContent,
+  saveBrowserProduct,
   saveBrowserSiteContent,
   uploadBrowserImage
 } from "@/lib/supabase-browser";
@@ -27,6 +29,7 @@ export function HomePageClient({
   initialProducts,
   initialContent
 }: HomePageClientProps) {
+  const { enabled: adminEnabled } = useAdminMode();
   const [products, setProducts] = useState(initialProducts);
   const [content, setContent] = useState(initialContent);
   const [pending, setPending] = useState(false);
@@ -136,6 +139,41 @@ export function HomePageClient({
         error instanceof Error
           ? `Image upload failed: ${error.message}`
           : "Image upload failed."
+      );
+    }
+  }
+
+  async function replaceShopTileImage(productId: string, file: File) {
+    try {
+      const publicUrl = await uploadBrowserImage(file);
+      setProducts((current) =>
+        current.map((p) =>
+          p.id === productId ? { ...p, imageUrl: publicUrl, previewUrl: publicUrl } : p
+        )
+      );
+      const updated = products.find((p) => p.id === productId);
+      if (updated) {
+        await saveBrowserProduct({ ...updated, imageUrl: publicUrl, previewUrl: publicUrl });
+      }
+      setStatus("Photo saved.");
+    } catch (error) {
+      setStatus(
+        error instanceof Error ? `Image upload failed: ${error.message}` : "Image upload failed."
+      );
+    }
+  }
+
+  async function updateProductTitle(productId: string, title: string) {
+    const updated = products.find((p) => p.id === productId);
+    if (!updated) return;
+    const next = { ...updated, title };
+    setProducts((current) => current.map((p) => (p.id === productId ? next : p)));
+    try {
+      await saveBrowserProduct(next);
+      setStatus("Label saved.");
+    } catch (error) {
+      setStatus(
+        error instanceof Error ? `Save failed: ${error.message}` : "Save failed."
       );
     }
   }
@@ -336,27 +374,48 @@ export function HomePageClient({
 
           {products.length > 0 ? (
             <div className="shop-preview__grid">
-              {products.slice(0, 4).map((product) => (
-                <Link
-                  key={product.id}
-                  className="shop-tile"
-                  href={`/prints/${product.slug}`}
-                >
-                  <div className="shop-tile__image-wrap">
-                    <SafeImage
+              {products.slice(0, 4).map((product) =>
+                adminEnabled ? (
+                  <article key={product.id} className="shop-tile">
+                    <InlineEditableImage
+                      wrapperClassName="shop-tile__image-wrap"
                       className="shop-tile__image"
-                      fallbackClassName="shop-tile__image shop-tile__image--empty"
-                      fallbackLabel="Upload image"
-                      src={product.previewUrl || product.imageUrl}
+                      src={product.previewUrl || product.imageUrl || ""}
                       alt={product.title}
+                      emptyLabel="Upload image"
+                      onChange={(file) => void replaceShopTileImage(product.id, file)}
                     />
-                  </div>
-                  <div className="shop-tile__body">
-                    <span className="shop-tile__tag">{product.category}</span>
-                    <h3>{product.title}</h3>
-                  </div>
-                </Link>
-              ))}
+                    <div className="shop-tile__body">
+                      <span className="shop-tile__tag">{product.category}</span>
+                      <InlineEditableText
+                        as="h3"
+                        value={product.title}
+                        onChange={(value) => void updateProductTitle(product.id, value)}
+                      />
+                    </div>
+                  </article>
+                ) : (
+                  <Link
+                    key={product.id}
+                    className="shop-tile"
+                    href={`/prints/${product.slug}`}
+                  >
+                    <div className="shop-tile__image-wrap">
+                      <SafeImage
+                        className="shop-tile__image"
+                        fallbackClassName="shop-tile__image shop-tile__image--empty"
+                        fallbackLabel="Upload image"
+                        src={product.previewUrl || product.imageUrl}
+                        alt={product.title}
+                      />
+                    </div>
+                    <div className="shop-tile__body">
+                      <span className="shop-tile__tag">{product.category}</span>
+                      <h3>{product.title}</h3>
+                    </div>
+                  </Link>
+                )
+              )}
             </div>
           ) : (
             <div className="empty-state shop-preview__empty">
