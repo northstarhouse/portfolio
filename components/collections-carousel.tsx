@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { InlineEditableText } from "@/components/inline-admin";
+import { SafeImage } from "@/components/safe-image";
 
 type CollectionItem = {
   tag: string;
@@ -75,7 +76,13 @@ export function CollectionsCarousel({
             <article key={collection.title} className="card">
               <div className="card-img">
                 {collection.image ? (
-                  <img src={collection.image} alt={collection.title} />
+                  <SafeImage
+                    className="card-img__image"
+                    fallbackClassName="card-img__empty"
+                    fallbackLabel="Upload collection image"
+                    src={collection.image}
+                    alt={collection.title}
+                  />
                 ) : (
                   <div className="card-img__empty">Upload collection image</div>
                 )}

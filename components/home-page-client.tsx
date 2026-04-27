@@ -9,6 +9,7 @@ import {
   InlineEditableText,
   InlineEditToolbar
 } from "@/components/inline-admin";
+import { SafeImage } from "@/components/safe-image";
 import {
   fetchBrowserProducts,
   fetchBrowserSiteContent,
@@ -358,8 +359,10 @@ export function HomePageClient({
                   href={`/prints/${product.slug}`}
                 >
                   <div className="shop-tile__image-wrap">
-                    <img
+                    <SafeImage
                       className="shop-tile__image"
+                      fallbackClassName="shop-tile__image shop-tile__image--empty"
+                      fallbackLabel="Upload image"
                       src={product.previewUrl || product.imageUrl}
                       alt={product.title}
                     />

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCart } from "@/components/cart-context";
+import { SafeImage } from "@/components/safe-image";
 import { formatCurrency } from "@/lib/format";
 
 export default function CartPage() {
@@ -25,8 +26,10 @@ export default function CartPage() {
             <>
               {items.map((item) => (
                 <article className="cart-item" key={item.id}>
-                  <img
+                  <SafeImage
                     className="cart-item__thumb"
+                    fallbackClassName="cart-item__thumb cart-item__thumb--empty"
+                    fallbackLabel="No image"
                     src={item.previewUrl || item.imageUrl}
                     alt={item.title}
                   />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SafeImage } from "@/components/safe-image";
 
 type HeroSlideshowProps = {
   slides: Array<{
@@ -42,7 +43,13 @@ export function HeroSlideshow({ slides }: HeroSlideshowProps) {
           key={`${slide.src}-${index}`}
           className={`slide${index === activeIndex ? " active" : ""}`}
         >
-          <img src={slide.src} alt={slide.alt} />
+          <SafeImage
+            className="slide__image"
+            fallbackClassName="slideshow__empty-state"
+            fallbackLabel="Image unavailable"
+            src={slide.src}
+            alt={slide.alt}
+          />
         </div>
       ))}
     </div>

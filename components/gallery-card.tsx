@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AddToCartButton } from "@/components/add-to-cart-button";
+import { SafeImage } from "@/components/safe-image";
 import { formatCurrency } from "@/lib/format";
 import { Product } from "@/lib/types";
 
@@ -7,8 +8,10 @@ export function GalleryCard({ product }: { product: Product }) {
   return (
     <article className="gallery-card">
       <Link href={`/prints/${product.slug}`}>
-        <img
+        <SafeImage
           className="gallery-card__image"
+          fallbackClassName="gallery-card__image gallery-card__image--empty"
+          fallbackLabel="Upload image"
           src={product.previewUrl || product.imageUrl}
           alt={product.title}
         />

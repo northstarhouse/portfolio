@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useAdminMode } from "@/components/admin-mode-provider";
+import { SafeImage } from "@/components/safe-image";
 
 type InlineEditableTextProps = {
   as?: "span" | "p" | "h1" | "h2" | "h3" | "cite" | "blockquote";
@@ -109,7 +110,13 @@ export function InlineEditableImage({
       className={`${wrapperClassName ?? ""}${enabled ? " inline-editable-image" : ""}`}
     >
       {src ? (
-        <img className={className} src={src} alt={alt} />
+        <SafeImage
+          className={className}
+          fallbackClassName={`${className ?? ""} inline-editable-image__placeholder`}
+          fallbackLabel="Upload image"
+          src={src}
+          alt={alt}
+        />
       ) : (
         <div className={`${className ?? ""} inline-editable-image__placeholder`}>
           <span>Upload image</span>
