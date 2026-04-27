@@ -81,6 +81,8 @@ export function CollectionsCarousel({
                   alt={collection.title}
                   className="card-img__image"
                   wrapperClassName="card-img__editable"
+                  badgeLabel="Click to upload cover"
+                  emptyLabel="Click to upload cover"
                   onChange={(file) => onReplaceCollectionImage?.(index, file)}
                 />
               </div>

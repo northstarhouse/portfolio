@@ -18,6 +18,8 @@ type InlineEditableImageProps = {
   alt: string;
   className?: string;
   wrapperClassName?: string;
+  badgeLabel?: string;
+  emptyLabel?: string;
   onChange: (file: File) => void;
 };
 
@@ -101,6 +103,8 @@ export function InlineEditableImage({
   alt,
   className,
   wrapperClassName,
+  badgeLabel = "Replace image",
+  emptyLabel = "Upload image",
   onChange
 }: InlineEditableImageProps) {
   const { enabled } = useAdminMode();
@@ -113,18 +117,18 @@ export function InlineEditableImage({
         <SafeImage
           className={className}
           fallbackClassName={`${className ?? ""} inline-editable-image__placeholder`}
-          fallbackLabel="Upload image"
+          fallbackLabel={emptyLabel}
           src={src}
           alt={alt}
         />
       ) : (
         <div className={`${className ?? ""} inline-editable-image__placeholder`}>
-          <span>Upload image</span>
+          <span>{emptyLabel}</span>
         </div>
       )}
       {enabled ? (
         <>
-          <span className="inline-editable-image__badge">Replace image</span>
+          <span className="inline-editable-image__badge">{badgeLabel}</span>
           <input
             className="admin-hidden-input"
             type="file"

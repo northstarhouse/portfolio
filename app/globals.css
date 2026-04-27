@@ -1333,6 +1333,14 @@ footer {
   text-transform: uppercase;
 }
 
+.card-img__editable .inline-editable-image__badge {
+  right: 12px;
+  left: 12px;
+  bottom: 12px;
+  text-align: center;
+  background: rgba(46, 42, 38, 0.84);
+}
+
 .inline-editable-image__placeholder {
   display: grid;
   place-items: center;
