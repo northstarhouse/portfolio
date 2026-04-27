@@ -56,6 +56,7 @@ export function CollectionPageClient({ slug, collection }: CollectionPageClientP
                       fallbackLabel="No image"
                       src={product.previewUrl || product.imageUrl}
                       alt={product.title}
+                      width={600}
                     />
                   </div>
                 </Link>

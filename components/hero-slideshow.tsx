@@ -50,6 +50,7 @@ export function HeroSlideshow({ slides }: HeroSlideshowProps) {
             src={slide.src}
             alt={slide.alt}
             loading="eager"
+            width={1400}
           />
         </div>
       ))}

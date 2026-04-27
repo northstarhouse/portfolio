@@ -21,6 +21,7 @@ type InlineEditableImageProps = {
   wrapperClassName?: string;
   badgeLabel?: string;
   emptyLabel?: string;
+  width?: number;
   onChange: (file: File) => void;
 };
 
@@ -108,6 +109,7 @@ export function InlineEditableImage({
   wrapperClassName,
   badgeLabel = "Replace image",
   emptyLabel = "Upload image",
+  width,
   onChange
 }: InlineEditableImageProps) {
   const { enabled } = useAdminMode();
@@ -123,6 +125,7 @@ export function InlineEditableImage({
           fallbackLabel={emptyLabel}
           src={src}
           alt={alt}
+          width={width}
         />
       ) : (
         <div className={`${className ?? ""} inline-editable-image__placeholder`}>

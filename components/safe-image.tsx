@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { optimizeImageUrl } from "@/lib/image";
 
 type SafeImageProps = {
   src?: string | null;
@@ -9,6 +10,7 @@ type SafeImageProps = {
   fallbackClassName?: string;
   fallbackLabel?: string;
   loading?: "lazy" | "eager";
+  width?: number;
 };
 
 export function SafeImage({
@@ -17,7 +19,8 @@ export function SafeImage({
   className,
   fallbackClassName,
   fallbackLabel = "Image unavailable",
-  loading = "lazy"
+  loading = "lazy",
+  width
 }: SafeImageProps) {
   const [failed, setFailed] = useState(!src);
 
@@ -33,10 +36,12 @@ export function SafeImage({
     );
   }
 
+  const resolvedSrc = src && width ? optimizeImageUrl(src, width) : (src ?? "");
+
   return (
     <img
       className={className}
-      src={src ?? ""}
+      src={resolvedSrc}
       alt={alt}
       loading={loading}
       onError={() => setFailed(true)}

@@ -410,6 +410,7 @@ export function HomePageClient({
                         fallbackLabel="Upload image"
                         src={product.previewUrl || product.imageUrl}
                         alt={product.title}
+                        width={600}
                       />
                     </div>
                     <div className="shop-tile__body">
