@@ -760,48 +760,20 @@ select {
 footer {
   background: var(--text-dark);
   color: var(--taupe);
-  padding: 34px 40px 22px;
-}
-
-.footer-top {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
-  gap: 28px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.footer-logo {
-  font-family: var(--font-display), serif;
-  font-size: 18px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #faf7f2;
-  margin-bottom: 14px;
-  font-weight: 500;
-}
-
-.footer-col h4 {
-  color: var(--taupe-dark);
-  margin-bottom: 18px;
-}
-
-.footer-col a {
-  display: block;
-  margin-bottom: 10px;
-}
-
-.footer-col a:hover {
-  color: var(--gold-light);
+  padding: 18px 40px 16px;
 }
 
 .footer-bottom {
-  padding-top: 16px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   font-size: 13px;
   color: var(--warm-gray);
+  text-align: center;
+}
+
+.footer-bottom--simple {
+  min-height: 24px;
 }
 
 .cart-layout,
@@ -1473,7 +1445,6 @@ footer {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .footer-top,
   .cart-layout,
   .product-layout,
   .admin-grid,
@@ -1515,7 +1486,6 @@ footer {
     padding: 0 20px;
   }
 
-  .footer-top,
   .footer-bottom,
   .cart-layout,
   .product-layout,
@@ -1530,13 +1500,6 @@ footer {
   .product-meta,
   .summary-row {
     grid-template-columns: 1fr;
-  }
-
-  .footer-bottom {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    text-align: center;
   }
 
   .cart-layout,
