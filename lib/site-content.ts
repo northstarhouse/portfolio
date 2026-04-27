@@ -24,30 +24,35 @@ export const defaultSiteContent: SiteContent = {
       {
         tag: "Landscapes",
         title: "Golden Hour & Open Meadows",
+        image: "",
         description:
           "Sun-drenched fields, rolling oak-dotted hills, and the long light of late afternoon in the Sierra Nevada foothills."
       },
       {
         tag: "Architecture",
         title: "Historic Spaces & Buildings",
+        image: "",
         description:
           "Nevada County's storied architecture - from Victorian homes to mining-era halls - captured in quiet, reverent detail."
       },
       {
         tag: "Nature & Light",
         title: "Seasonal Light & Forest",
+        image: "",
         description:
           "Morning fog through pine canopy, autumn color along trail corridors, and the soft quiet of a Nevada County winter."
       },
       {
         tag: "Water & Wilderness",
         title: "Creeks, Rivers & Trails",
+        image: "",
         description:
           "The quiet creeks and forested trails that thread through Nevada County - still, wild, and full of light."
       },
       {
         tag: "Community",
         title: "Local Events & Gatherings",
+        image: "",
         description:
           "Farmers markets, festivals, and neighborhood moments - the living culture of a community that takes care of itself."
       }

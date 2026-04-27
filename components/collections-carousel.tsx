@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { InlineEditableText } from "@/components/inline-admin";
-import { SafeImage } from "@/components/safe-image";
+import { InlineEditableImage, InlineEditableText } from "@/components/inline-admin";
 
 type CollectionItem = {
   tag: string;
@@ -17,8 +16,9 @@ type CollectionsCarouselProps = {
   collections: CollectionItem[];
   onUpdateCollection?: (
     index: number,
-    patch: Partial<Pick<CollectionItem, "tag" | "title" | "description">>
+    patch: Partial<Pick<CollectionItem, "tag" | "title" | "description" | "image">>
   ) => void;
+  onReplaceCollectionImage?: (index: number, file: File) => void;
 };
 
 function getVisibleCards(width: number) {
@@ -35,7 +35,8 @@ function getVisibleCards(width: number) {
 
 export function CollectionsCarousel({
   collections,
-  onUpdateCollection
+  onUpdateCollection,
+  onReplaceCollectionImage
 }: CollectionsCarouselProps) {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [visibleCards, setVisibleCards] = useState(3);
@@ -75,17 +76,13 @@ export function CollectionsCarousel({
           {collections.map((collection, index) => (
             <article key={collection.title} className="card">
               <div className="card-img">
-                {collection.image ? (
-                  <SafeImage
-                    className="card-img__image"
-                    fallbackClassName="card-img__empty"
-                    fallbackLabel="Upload collection image"
-                    src={collection.image}
-                    alt={collection.title}
-                  />
-                ) : (
-                  <div className="card-img__empty">Upload collection image</div>
-                )}
+                <InlineEditableImage
+                  src={collection.image}
+                  alt={collection.title}
+                  className="card-img__image"
+                  wrapperClassName="card-img__editable"
+                  onChange={(file) => onReplaceCollectionImage?.(index, file)}
+                />
               </div>
               <div className="card-body">
                 <InlineEditableText

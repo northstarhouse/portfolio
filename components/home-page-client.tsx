@@ -13,7 +13,6 @@ import { SafeImage } from "@/components/safe-image";
 import {
   fetchBrowserProducts,
   fetchBrowserSiteContent,
-  saveBrowserProduct,
   saveBrowserSiteContent,
   uploadBrowserImage
 } from "@/lib/supabase-browser";
@@ -71,7 +70,7 @@ export function HomePageClient({
 
   const collections = content.collections.items.map((item, index) => ({
     ...item,
-    image: "",
+    image: item.image ?? "",
     href: products[index] ? `/prints/${products[index].slug}` : "#shop"
   }));
 
@@ -107,6 +106,31 @@ export function HomePageClient({
       setContent(nextContent);
       await saveBrowserSiteContent(nextContent);
       setStatus("Hero image saved.");
+    } catch (error) {
+      setStatus(
+        error instanceof Error
+          ? `Image upload failed: ${error.message}`
+          : "Image upload failed."
+      );
+    }
+  }
+
+  async function replaceCollectionImage(index: number, file: File) {
+    try {
+      const publicUrl = await uploadBrowserImage(file);
+      const nextContent = {
+        ...content,
+        collections: {
+          ...content.collections,
+          items: content.collections.items.map((item, itemIndex) =>
+            itemIndex === index ? { ...item, image: publicUrl } : item
+          )
+        }
+      };
+
+      setContent(nextContent);
+      await saveBrowserSiteContent(nextContent);
+      setStatus("Collection cover saved.");
     } catch (error) {
       setStatus(
         error instanceof Error
@@ -265,6 +289,9 @@ export function HomePageClient({
               }));
               setDirty(true);
             }}
+            onReplaceCollectionImage={(index, file) =>
+              void replaceCollectionImage(index, file)
+            }
           />
         </section>
 
