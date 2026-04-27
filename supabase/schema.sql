@@ -51,31 +51,31 @@ values (
           "tag": "Nevada City",
           "title": "Nevada City",
           "image": "",
-          "description": "Historic storefronts, gas-lit streets, and the quiet character of one of California''s most beloved Gold Rush towns."
+          "description": "A collection of Nevada City''s historic streets, storefronts, gardens, and small-town details."
         },
         {
           "tag": "Grass Valley",
           "title": "Grass Valley",
           "image": "",
-          "description": "Downtown murals, market days, and neighborhood scenes from the heart of the county."
+          "description": "Grass Valley''s architecture, local history, neighborhoods, and familiar downtown scenes."
         },
         {
           "tag": "Local Events",
           "title": "Local Events & Gatherings",
           "image": "",
-          "description": "Farmers markets, festivals, and community moments - the living culture of a place that takes care of itself."
+          "description": "Traditions, celebrations, and small-town moments that bring the community to life."
         },
         {
           "tag": "Creeks & Trails",
           "title": "Creeks, Rivers & Trails",
           "image": "",
-          "description": "The quiet waterways and forested trails that thread through Nevada County - still, wild, and full of light."
+          "description": "A tribute to the quiet wild places woven through Nevada County."
         },
         {
           "tag": "Love Letters",
           "title": "Love Letters",
           "image": "",
-          "description": "Personal and poetic images of the county - the small moments and overlooked corners that make this place impossible to forget."
+          "description": "A curation of my artist heart."
         }
       ]
     },
