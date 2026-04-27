@@ -38,6 +38,8 @@ export function HomePageClient({
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
+    if (!adminEnabled) return;
+
     let active = true;
 
     Promise.all([fetchBrowserProducts(), fetchBrowserSiteContent()]).then(

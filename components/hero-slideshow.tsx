@@ -49,6 +49,7 @@ export function HeroSlideshow({ slides }: HeroSlideshowProps) {
             fallbackLabel="Image unavailable"
             src={slide.src}
             alt={slide.alt}
+            loading="eager"
           />
         </div>
       ))}

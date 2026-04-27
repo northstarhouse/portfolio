@@ -8,6 +8,7 @@ type SafeImageProps = {
   className?: string;
   fallbackClassName?: string;
   fallbackLabel?: string;
+  loading?: "lazy" | "eager";
 };
 
 export function SafeImage({
@@ -15,7 +16,8 @@ export function SafeImage({
   alt,
   className,
   fallbackClassName,
-  fallbackLabel = "Image unavailable"
+  fallbackLabel = "Image unavailable",
+  loading = "lazy"
 }: SafeImageProps) {
   const [failed, setFailed] = useState(!src);
 
@@ -36,6 +38,7 @@ export function SafeImage({
       className={className}
       src={src ?? ""}
       alt={alt}
+      loading={loading}
       onError={() => setFailed(true)}
     />
   );
