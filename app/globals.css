@@ -281,7 +281,7 @@ select {
 .hero-inner {
   padding: 56px 40px 48px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
   gap: 56px;
   align-items: center;
 }
@@ -379,8 +379,8 @@ select {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
-  aspect-ratio: 3 / 4;
-  max-height: 520px;
+  aspect-ratio: 16 / 10;
+  max-height: 460px;
   background: var(--beige);
 }
 
@@ -1325,7 +1325,7 @@ footer {
 
 .hero-admin-slides__thumb-image {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
 }
 
@@ -1366,8 +1366,8 @@ footer {
   }
 
   .slideshow {
-    max-height: 360px;
-    aspect-ratio: 4 / 3;
+    max-height: 320px;
+    aspect-ratio: 16 / 10;
   }
 
   .intro,
