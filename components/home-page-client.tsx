@@ -225,48 +225,6 @@ export function HomePageClient({
         </div>
       </section>
 
-      <section className="intro" id="about">
-        <div className="intro-inner">
-          <InlineEditableText
-            as="span"
-            className="section-eyebrow"
-            value={content.about.eyebrow}
-            onChange={(value) => {
-              setContent((current) => ({
-                ...current,
-                about: { ...current.about, eyebrow: value }
-              }));
-              setDirty(true);
-            }}
-          />
-          <InlineEditableText
-            as="h2"
-            multiline
-            value={content.about.title}
-            onChange={(value) => {
-              setContent((current) => ({
-                ...current,
-                about: { ...current.about, title: value }
-              }));
-              setDirty(true);
-            }}
-          />
-          <div className="gold-divider" />
-          <InlineEditableText
-            as="p"
-            multiline
-            value={content.about.body}
-            onChange={(value) => {
-              setContent((current) => ({
-                ...current,
-                about: { ...current.about, body: value }
-              }));
-              setDirty(true);
-            }}
-          />
-        </div>
-      </section>
-
       <section className="collections" id="collections">
         <div className="collections-header">
           <InlineEditableText
