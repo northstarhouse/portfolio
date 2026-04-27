@@ -52,10 +52,20 @@ export function HomePageClient({
     };
   }, []);
 
+  const heroImages = useMemo(() => {
+    const configuredImages = content.hero.images?.filter(Boolean) ?? [];
+
+    if (configuredImages.length > 0) {
+      return configuredImages;
+    }
+
+    return products.slice(0, 4).map((product) => product.imageUrl);
+  }, [content.hero.images, products]);
+
   const visibleProducts = useMemo(() => products.slice(0, 4), [products]);
-  const slideshowSlides = visibleProducts.map((product) => ({
-    src: product.imageUrl,
-    alt: product.title
+  const slideshowSlides = heroImages.map((imageUrl, index) => ({
+    src: imageUrl,
+    alt: visibleProducts[index]?.title ?? `Hero image ${index + 1}`
   }));
 
   const collections = content.collections.items.map((item, index) => ({
@@ -74,7 +84,6 @@ export function HomePageClient({
 
     try {
       await saveBrowserSiteContent(content);
-      await Promise.all(visibleProducts.map((product) => saveBrowserProduct(product)));
       setDirty(false);
       setStatus("Saved.");
     } catch (error) {
@@ -84,25 +93,23 @@ export function HomePageClient({
     }
   }
 
-  async function replaceLandingImage(productId: string, file: File) {
+  async function replaceLandingImage(index: number, file: File) {
     try {
       const publicUrl = await uploadBrowserImage(file);
-      const nextProducts = products.map((product) =>
-        product.id === productId
-          ? { ...product, imageUrl: publicUrl, previewUrl: publicUrl }
-          : product
-      );
-      const updatedProduct = nextProducts.find((product) => product.id === productId);
+      const nextImages = [...heroImages];
+      nextImages[index] = publicUrl;
 
-      setProducts(nextProducts);
+      const nextContent = {
+        ...content,
+        hero: {
+          ...content.hero,
+          images: nextImages
+        }
+      };
 
-      if (!updatedProduct) {
-        setStatus("Image updated in preview only.");
-        return;
-      }
-
-      await saveBrowserProduct(updatedProduct);
-      setStatus("Image saved.");
+      setContent(nextContent);
+      await saveBrowserSiteContent(nextContent);
+      setStatus("Hero image saved.");
     } catch (error) {
       setStatus(
         error instanceof Error
@@ -206,14 +213,14 @@ export function HomePageClient({
           <div className="hero-admin-slides">
             <HeroSlideshow slides={slideshowSlides} />
             <div className="hero-admin-slides__picker">
-              {visibleProducts.map((product) => (
+              {heroImages.map((imageUrl, index) => (
                 <InlineEditableImage
-                  key={product.id}
-                  src={product.previewUrl || product.imageUrl}
-                  alt={product.title}
+                  key={`${imageUrl}-${index}`}
+                  src={imageUrl}
+                  alt={visibleProducts[index]?.title ?? `Hero image ${index + 1}`}
                   wrapperClassName="hero-admin-slides__thumb"
                   className="hero-admin-slides__thumb-image"
-                  onChange={(file) => void replaceLandingImage(product.id, file)}
+                  onChange={(file) => void replaceLandingImage(index, file)}
                 />
               ))}
             </div>

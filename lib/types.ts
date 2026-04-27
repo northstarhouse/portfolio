@@ -33,6 +33,7 @@ export type SiteContent = {
     description: string;
     primaryCta: string;
     secondaryCta: string;
+    images?: string[];
   };
   about: {
     eyebrow: string;
